@@ -1,6 +1,7 @@
 local M = {
   sign_text = { "", "", "", "" },
   border = "rounded",
+  min_severity = 4,
   _ = {
     winid = -1,
   },
@@ -16,7 +17,7 @@ local diagnostic_severity_hl = {
 local diagnostic_ns_id = vim.api.nvim_create_namespace("diagnostic_ns")
 
 function M.setup(opts)
-  M.sign_text = vim.tbl_deep_extend("force", M.sign_text, opts or {})
+  M = vim.tbl_deep_extend("force", M, opts or {})
 end
 
 function M.start()
@@ -29,7 +30,7 @@ function M.start()
 
   -- get diagnostic count
   local t = {}
-  for i = 1, 4 do
+  for i = 1, M.min_severity do
     local diag = vim.tbl_map(function(item)
       return {
         lnum = item.lnum,
@@ -73,8 +74,11 @@ function M.start()
 end
 
 function M.show()
-  local diag =
-    vim.diagnostic.get(0, { lnum = vim.api.nvim_win_get_cursor(0)[1] - 1 })
+  local diag = vim.diagnostic.get(0, {
+    lnum = vim.api.nvim_win_get_cursor(0)[1] - 1,
+    severity = { min = M.min_severity },
+  })
+
   local max_width = 0
   local buf = vim.api.nvim_create_buf(false, true)
 
