@@ -1,6 +1,6 @@
-# clean-diagnostic
+# Clean-diagnostic
 
-## installation
+## Installation
 
 ```lua
   {
@@ -8,6 +8,8 @@
     event = "LspAttach",
     opts = {
       sign_text = { "", "", "", "" },
+      border = "rounded",
+      min_severity = 4,
     },
     keys = {
       {
