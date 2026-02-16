@@ -17,7 +17,6 @@ local diagnostic_ns_id = vim.api.nvim_create_namespace("diagnostic_ns")
 
 function M.setup(opts)
   M.sign_text = vim.tbl_deep_extend("force", M.sign_text, opts or {})
-  vim.diagnostic.config({ signs = { text = M.sign_text } })
 end
 
 function M.start()
