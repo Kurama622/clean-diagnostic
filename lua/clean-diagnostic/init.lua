@@ -2,9 +2,6 @@ local M = {
   sign_text = { "", "", "", "" },
   border = "rounded",
   min_severity = 4,
-  _ = {
-    winid = -1,
-  },
 }
 
 local diagnostic_severity_hl = {
@@ -74,50 +71,19 @@ function M.start()
 end
 
 function M.show()
-  local diag = vim.diagnostic.get(0, {
-    lnum = vim.api.nvim_win_get_cursor(0)[1] - 1,
+  vim.diagnostic.open_float({
+    scope = "line",
+    border = M.border,
+    severity_sort = true,
     severity = { min = M.min_severity },
+    format = function(diagnostic)
+      return (" %s"):format(diagnostic.message)
+    end,
+    prefix = function(diagnostic)
+      return M.sign_text[diagnostic.severity],
+        diagnostic_severity_hl[diagnostic.severity]
+    end,
   })
-
-  local max_width = 0
-  local buf = vim.api.nvim_create_buf(false, true)
-
-  for i, d in pairs(diag) do
-    local msg = ("%s %s: %s"):format(
-      M.sign_text[d.severity],
-      d.code,
-      d.message
-    )
-    max_width = math.max(max_width, #msg)
-
-    vim.api.nvim_buf_set_lines(buf, i - 1, i, false, { msg })
-    vim.api.nvim_buf_set_extmark(buf, diagnostic_ns_id, i - 1, 0, {
-      end_col = #msg,
-      hl_group = diagnostic_severity_hl[d.severity],
-    })
-  end
-
-  if max_width > 0 then
-    M._.winid = vim.api.nvim_open_win(buf, false, {
-      relative = "cursor",
-      style = "minimal",
-      width = max_width,
-      height = #diag,
-      bufpos = { 0, 0 },
-      border = M.border,
-    })
-
-    vim.api.nvim_create_autocmd("CursorMoved", {
-      pattern = "*",
-      once = true,
-      callback = function()
-        local winid = require("clean-diagnostic")._.winid
-        if vim.api.nvim_win_is_valid(winid) then
-          vim.api.nvim_win_close(winid, true)
-        end
-      end,
-    })
-  end
 end
 
 return M
