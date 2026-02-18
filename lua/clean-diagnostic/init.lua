@@ -2,6 +2,7 @@ local M = {
   sign_text = { "", "", "", "" },
   border = "rounded",
   min_severity = 4,
+  max_width = nil,
 }
 
 local diagnostic_severity_hl = {
@@ -75,6 +76,7 @@ function M.show()
     scope = "line",
     border = M.border,
     severity_sort = true,
+    max_width = M.max_width,
     severity = { min = M.min_severity },
     format = function(diagnostic)
       return (" %s"):format(diagnostic.message)
