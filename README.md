@@ -1,5 +1,7 @@
 # Clean-diagnostic
 
+Specific information will be displayed in the floating window when you request to show diagnostic details; at other times, only counts will be displayed.
+
 ![clean-diagnostic](https://github.com/user-attachments/assets/821249a5-13d5-4d09-88f7-84a2713c8563)
 
 ## Installation
