@@ -11,7 +11,6 @@ Specific information will be displayed in the floating window when you request t
     "kurama622/clean-diagnostic",
     event = "LspAttach",
     opts = {
-      sign_text = { "", "", "", "" },
       border = "rounded",
       min_severity = 4,
       max_width = 78,
@@ -24,4 +23,33 @@ Specific information will be displayed in the floating window when you request t
       },
     },
   }
+```
+
+## Other configuration items
+
+- icons
+
+Prefix icon for diagnostic messages.
+
+```lua
+icons = { "", "", "", "" }
+```
+
+- show_diagnostic_count
+
+Default value is true
+
+```lua
+show_diagnostic_count = true
+```
+
+
+- always_show_message
+
+Automatically show diagnostic messages on the right side(`eol_right_align`).
+
+Default value is false
+
+```lua
+always_show_message = false,
 ```

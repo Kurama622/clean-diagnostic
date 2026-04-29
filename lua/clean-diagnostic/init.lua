@@ -1,8 +1,10 @@
 local M = {
-  sign_text = { "", "", "", "" },
+  icons = nil,
   border = "rounded",
   min_severity = 4,
   max_width = nil,
+  show_diagnostic_count = true,
+  always_show_message = false,
 }
 
 local diagnostic_severity_hl = {
@@ -16,12 +18,20 @@ local diagnostic_ns_id = vim.api.nvim_create_namespace("diagnostic_ns")
 
 function M.setup(opts)
   M = vim.tbl_deep_extend("force", M, opts or {})
+  local signs = vim.diagnostic.config().signs
+  M.sign_text = type(signs) == "table" and signs.text
+    or { "", "", "", "" }
+
+  if M.always_show_message then
+    M.update_diagnostic_config()
+  end
 end
 
 function M.start()
   if
     not vim.diagnostic.is_enabled({ bufnr = 0 })
     or #vim.lsp.get_clients({ bufnr = 0 }) == 0
+    or M.show_diagnostic_count == false
   then
     return
   end
@@ -67,6 +77,7 @@ function M.start()
       virt_text_pos = "eol",
       invalidate = true,
       right_gravity = false,
+      priority = 1000,
     })
   end
 end
@@ -86,6 +97,34 @@ function M.show()
         diagnostic_severity_hl[diagnostic.severity]
     end,
   })
+end
+
+function M.update_diagnostic_config()
+  local cfg = vim.diagnostic.config()
+  cfg = vim.tbl_deep_extend("force", cfg, {
+    virtual_text = {
+      virt_text_pos = "eol_right_align",
+    },
+    severity_sort = true,
+  })
+  assert(cfg)
+
+  if cfg.virtual_text == false then
+    cfg.virtual_text = {}
+  end
+
+  if type(M.icons) == "table" then
+    cfg.virtual_text.prefix = function(diagnostic)
+      local icons = {
+        [vim.diagnostic.severity.ERROR] = M.icons[1],
+        [vim.diagnostic.severity.WARN] = M.icons[2],
+        [vim.diagnostic.severity.INFO] = M.icons[3],
+        [vim.diagnostic.severity.HINT] = M.icons[4],
+      }
+      return icons[diagnostic.severity]
+    end
+  end
+  vim.diagnostic.config(cfg)
 end
 
 return M
